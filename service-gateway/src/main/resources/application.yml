@@ -1,0 +1,34 @@
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://${discovery-server.hostname}:${discovery-server.port}/eureka/
+  instance:
+    appName: service-gateway
+    preferIpAddress: true
+    hostName: service-gateway
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+      - id: account-service
+        uri: lb://account-service
+        predicates:
+        - Path=/account-service/**
+      - id: deposit-service
+        uri: lb://deposit-service
+        predicates:
+        - Path=/deposit-service/**
+      - id: transfer-service
+        uri: lb://transfer-service
+        predicates:
+        - Path=/transfer-service/**
+      - id: withdraw-service
+        uri: lb://withdraw-service
+        predicates:
+        - Path=/withdraw-service/**

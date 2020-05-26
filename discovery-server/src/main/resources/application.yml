@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: discovery-server
+
+server:
+  port: 7070
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://${discovery-server.hostname}:${discovery-server.port}/eureka/
+  instance:
+    appName: discovery-server
+    preferIpAddress: true
+    hostName: ${discovery-server.hostname}
+    leaseExpirationDurationInSeconds: 30
+    leaseRenewalIntervalInSeconds: 30
+  server:
+    maxThreadsForPeerReplication: 0

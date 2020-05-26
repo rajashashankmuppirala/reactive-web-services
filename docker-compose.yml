@@ -1,0 +1,113 @@
+version: "3.7"
+
+services:
+  db-service:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: shashank
+
+  discovery-server:
+    build:
+      context: ./discovery-server
+      dockerfile: Dockerfile
+    ports:
+      - "7070:7070"
+    depends_on:
+      - db-service
+    environment:
+      DISCOVERY-SERVER_HOSTNAME: discovery-server
+      DISCOVERY-SERVER_PORT: 7070
+
+  account-service:
+    build:
+      context: ./account-service
+      dockerfile: Dockerfile
+    expose:
+      - "8080"
+    depends_on:
+      - discovery-server
+      - transaction-service
+    environment:
+      TRANSACTION_SERVICE_URL: http://transaction-service
+      DISCOVERY-SERVER_HOSTNAME: discovery-server
+      DISCOVERY-SERVER_PORT: 7070
+
+  deposit-service:
+    build:
+      context: ./deposit-service
+      dockerfile: Dockerfile
+    expose:
+      - "8081"
+    depends_on:
+      - discovery-server
+      - transaction-service
+    environment:
+      TRANSACTION_SERVICE_URL: http://transaction-service
+      DISCOVERY-SERVER_HOSTNAME: discovery-server
+      DISCOVERY-SERVER_PORT: 7070
+
+  transaction-service:
+    build:
+      context: ./transaction-service
+      dockerfile: Dockerfile
+    expose:
+      - "9090"
+    depends_on:
+      - discovery-server
+      - db-service
+    environment:
+      DB_HOST: db-service
+      DB_PORT: 5432
+      DB_NAME: postgres
+      DB_USER: postgres
+      DB_PASSWD: shashank
+      DISCOVERY-SERVER_HOSTNAME: discovery-server
+      DISCOVERY-SERVER_PORT: 7070
+
+  transfer-service:
+    build:
+      context: ./transfer-service
+      dockerfile: Dockerfile
+    expose:
+      - "8082"
+    depends_on:
+      - discovery-server
+      - transaction-service
+    environment:
+      TRANSACTION_SERVICE_URL: http://transaction-service
+      DISCOVERY-SERVER_HOSTNAME: discovery-server
+      DISCOVERY-SERVER_PORT: 7070
+
+  withdraw-service:
+    build:
+      context: ./withdraw-service
+      dockerfile: Dockerfile
+    expose:
+      - "8083"
+    depends_on:
+      - discovery-server
+      - transaction-service
+    environment:
+      TRANSACTION_SERVICE_URL: http://transaction-service
+      DISCOVERY-SERVER_HOSTNAME: discovery-server
+      DISCOVERY-SERVER_PORT: 7070
+
+  service-gateway:
+    build:
+      context: ./service-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "9000:8080"
+    depends_on:
+      - discovery-server
+      - transaction-service
+      - account-service
+      - deposit-service
+      - transfer-service
+      - withdraw-service
+    environment:
+      DISCOVERY-SERVER_HOSTNAME: discovery-server
+      DISCOVERY-SERVER_PORT: 7070
+

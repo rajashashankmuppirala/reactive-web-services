@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+  codec:
+    max-in-memory-size: 1MB
+  application:
+    name: account-service
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://${discovery-server.hostname}:${discovery-server.port}/eureka/
+  instance:
+    appName: account-service
+    preferIpAddress: true
+    hostName: account-service
