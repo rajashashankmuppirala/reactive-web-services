@@ -1,6 +1,20 @@
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+    ratelimiters:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+
 eureka:
   client:
-    registerWithEureka: true
+    registerWithEureka: false
     fetchRegistry: true
     serviceUrl:
       defaultZone: http://${discovery-server.hostname}:${discovery-server.port}/eureka/
@@ -11,24 +25,107 @@ eureka:
 
 spring:
   cloud:
+    circuitbreaker:
+      resilience4j:
+        enabled: true
     gateway:
-      discovery:
-        locator:
-          enabled: true
       routes:
-      - id: account-service
-        uri: lb://account-service
-        predicates:
-        - Path=/account-service/**
-      - id: deposit-service
-        uri: lb://deposit-service
-        predicates:
-        - Path=/deposit-service/**
-      - id: transfer-service
-        uri: lb://transfer-service
-        predicates:
-        - Path=/transfer-service/**
-      - id: withdraw-service
-        uri: lb://withdraw-service
-        predicates:
-        - Path=/withdraw-service/**
+        - id: account-service
+          uri: lb://account-service
+          predicates:
+            - Path=/account-service/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: account-service
+                fallbackUri: forward:/fallback/accountService
+
+        - id: deposit-service
+          uri: lb://deposit-service
+          predicates:
+            - Path=/deposit-service/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: deposit-service
+                fallbackUri: forward:/fallback/depositService
+
+        - id: transfer-service
+          uri: lb://transfer-service
+          predicates:
+            - Path=/transfer-service/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: transfer-service
+                fallbackUri: forward:/fallback/transferService
+
+        - id: withdraw-service
+          uri: lb://withdraw-service
+          predicates:
+            - Path=/withdraw-service/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: withdraw-service
+                fallbackUri: forward:/fallback/withdrawService
+
+logging.level.io.github.resilience4j: DEBUG
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      minimumNumberOfCalls: 5
+      permittedNumberOfCallsInHalfOpenState: 3
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      waitDurationInOpenState: 2s
+      failureRateThreshold: 5
+      eventConsumerBufferSize: 10
+      slowCallDurationThreshold: 200ms
+      slowCallRateThreshold: 30
+      recordExceptions:
+        - org.springframework.web.client.HttpServerErrorException
+        - java.io.IOException
+      ignoreExceptions:
+        - java.lang.IllegalStateException
+    shared:
+      registerHealthIndicator: true
+      slidingWindowSize: 50
+      permittedNumberOfCallsInHalfOpenState: 30
+      waitDurationInOpenState: 1s
+      failureRateThreshold: 5
+      eventConsumerBufferSize: 10
+      ignoreExceptions:
+        - java.lang.IllegalStateException
+  instances:
+    account-service:
+      baseConfig: default
+    deposit-service:
+      baseConfig: shared
+    transfer-service:
+      baseConfig: default
+    withdraw-service:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      minimumNumberOfCalls: 10
+      permittedNumberOfCallsInHalfOpenState: 3
+      waitDurationInOpenState: 1s
+      failureRateThreshold: 1
+      eventConsumerBufferSize: 10
+
+resilience4j.timelimiter:
+  configs:
+    default:
+      timeoutDuration: 5s
+      cancelRunningFuture: false
+  instances:
+    account-service:
+      baseConfig: default
+    deposit-service:
+      baseConfig: default
+    transfer-service:
+      baseConfig: default
+    withdraw-service:
+      baseConfig: default
