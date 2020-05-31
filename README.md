@@ -10,6 +10,7 @@ Microservice stack using spring reactive
 :white_check_mark: Spring cloud Loadbalancing with reactive webclient and using Eureka <br/>
 :white_check_mark: Docker <br/>
 :white_check_mark: Docker Compose <br/>
+:white_check_mark: Circuit Breaker - Resilience4J <br/>
 
 # To Do
 :question: Exception Handling <br/>
