@@ -24,17 +24,43 @@ eureka:
     hostName: service-gateway
 
 spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            token-uri: http://${auth-server.hostname}:${auth-server.port}/auth/realms/service-gateway-realm/protocol/openid-connect/token
+            issuer-uri: http://${auth-server.hostname}:${auth-server.port}/auth/realms/service-gateway-realm
+            user-name-attribute: preferred_username
+        registration:
+          gateway-password-grant:
+            provider: keycloak
+            client-id: service-gateway-client
+            client-secret: 4854dcd8-2f38-4d5d-b61f-3e426319468c
+            authorization-grant-type: password
+            scope: openid
   cloud:
     circuitbreaker:
       resilience4j:
         enabled: true
     gateway:
+      default-filters:
+        - TokenRelay
+        - RemoveRequestHeader=Cookie
       routes:
+        - id: auth-service
+          uri: http://192.168.1.12:8080
+          predicates:
+            - Path=/auth123/**
+          filters:
+            - RewritePath=/auth/(?<segment>.*), /auth/realms/service-gateway-realm/protocol/openid-connect/$\{segment}
+            - AddRequestHeader=Authorization, Basic c2VydmljZS1nYXRld2F5LWNsaWVudDo0ODU0ZGNkOC0yZjM4LTRkNWQtYjYxZi0zZTQyNjMxOTQ2OGM=
         - id: account-service
           uri: lb://account-service
           predicates:
             - Path=/account-service/**
           filters:
+            - RemoveRequestHeader=Cookie
             - name: CircuitBreaker
               args:
                 name: account-service
@@ -70,7 +96,7 @@ spring:
                 name: withdraw-service
                 fallbackUri: forward:/fallback/withdrawService
 
-logging.level.io.github.resilience4j: DEBUG
+default-client-registration-id: gateway-password-grant
 
 resilience4j.circuitbreaker:
   configs:
@@ -129,3 +155,16 @@ resilience4j.timelimiter:
       baseConfig: default
     withdraw-service:
       baseConfig: default
+
+
+logging:
+  level:
+    root: DEBUG
+    io:
+      github:
+        resilience4j: DEBUG
+    org:
+      springframework:
+        cloud.gateway: DEBUG
+        http.server.reactive: DEBUG
+        web.reactive: DEBUG

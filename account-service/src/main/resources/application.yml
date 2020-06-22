@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 6060
 
 spring:
   cloud:
@@ -10,6 +10,11 @@ spring:
     max-in-memory-size: 1MB
   application:
     name: account-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://${auth-server.hostname}:${auth-server.port}/auth/realms/service-gateway-realm/protocol/openid-connect/certs
 eureka:
   client:
     registerWithEureka: true
@@ -20,3 +25,11 @@ eureka:
     appName: account-service
     preferIpAddress: true
     hostName: account-service
+
+logging:
+  level:
+    root: DEBUG
+    org:
+      springframework:
+        http.server.reactive: DEBUG
+        web.reactive: DEBUG

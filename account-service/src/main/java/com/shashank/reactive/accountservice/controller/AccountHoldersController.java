@@ -2,8 +2,12 @@ package com.shashank.reactive.accountservice.controller;
 
 import com.shashank.reactive.accountservice.service.AccountService;
 import com.shashank.reactive.accountservice.model.AccountHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -12,6 +16,7 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/account-service")
 public class AccountHoldersController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountHoldersController.class);
 
     @Autowired
     AccountService accountService;

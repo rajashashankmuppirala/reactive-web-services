@@ -1,5 +1,7 @@
 FROM openjdk:8-jdk-alpine
 
-COPY target/deposit-service-0.0.1-SNAPSHOT.jar app.jar
+COPY ./wait-until-start.sh wait-until-start
 
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+RUN chmod +x wait-until-start
+
+COPY deposit-service/target/deposit-service-0.0.1-SNAPSHOT.jar app.jar

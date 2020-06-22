@@ -1,4 +1,4 @@
-version: "3.7"
+version: "2.3"
 
 services:
   db-service:
@@ -6,57 +6,90 @@ services:
     ports:
       - "5432:5432"
     environment:
+      POSTGRES_MULTIPLE_DATABASES: "app,keycloak"
       POSTGRES_PASSWORD: shashank
+    mem_limit: 512M
+    volumes:
+      - "./db-service/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d"
+      - "./db-service/data:/var/lib/postgresql/data"
+  keycloak-auth-service:
+    image: jboss/keycloak
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db-service
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: db-service
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: shashank
+      DB_SCHEMA: public
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: testing
+      JAVA_OPTS: -server -Xms256m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=128M -XX:+UseAdaptiveSizePolicy -XX:MaxMetaspaceSize=512m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true-Djava.net.preferIPv4Stack=true
+    mem_limit: 1024M
 
   discovery-server:
     build:
-      context: ./discovery-server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: discovery-server/Dockerfile
     ports:
       - "7070:7070"
     depends_on:
       - db-service
+    entrypoint: "./wait-until-start -t 240 keycloak-auth-service:8080 -- java -jar /app.jar"
     environment:
       DISCOVERY-SERVER_HOSTNAME: discovery-server
       DISCOVERY-SERVER_PORT: 7070
+    mem_limit: 300M
 
   account-service:
     build:
-      context: ./account-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: account-service/Dockerfile
     expose:
       - "8080"
     depends_on:
       - discovery-server
       - transaction-service
+    entrypoint: "./wait-until-start -t 240 discovery-server:7070 -- java -jar /app.jar"
     environment:
       TRANSACTION_SERVICE_URL: http://transaction-service
       DISCOVERY-SERVER_HOSTNAME: discovery-server
       DISCOVERY-SERVER_PORT: 7070
+      AUTH-SERVER_HOSTNAME: keycloak-auth-service
+      AUTH-SERVER_PORT: 8080
+    mem_limit: 300M
 
   deposit-service:
     build:
-      context: ./deposit-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: deposit-service/Dockerfile
     expose:
       - "8081"
     depends_on:
       - discovery-server
       - transaction-service
+    entrypoint: "./wait-until-start -t 240 discovery-server:7070 -- java -jar /app.jar"
     environment:
       TRANSACTION_SERVICE_URL: http://transaction-service
       DISCOVERY-SERVER_HOSTNAME: discovery-server
       DISCOVERY-SERVER_PORT: 7070
+      AUTH-SERVER_HOSTNAME: keycloak-auth-service
+      AUTH-SERVER_PORT: 8080
+    mem_limit: 300M
 
   transaction-service:
     build:
-      context: ./transaction-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: transaction-service/Dockerfile
     expose:
       - "9090"
     depends_on:
       - discovery-server
       - db-service
+    entrypoint: "./wait-until-start -t 240 discovery-server:7070 -- java -jar /app.jar"
     environment:
       DB_HOST: db-service
       DB_PORT: 5432
@@ -65,49 +98,58 @@ services:
       DB_PASSWD: shashank
       DISCOVERY-SERVER_HOSTNAME: discovery-server
       DISCOVERY-SERVER_PORT: 7070
+    mem_limit: 300M
 
   transfer-service:
     build:
-      context: ./transfer-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: transfer-service/Dockerfile
     expose:
       - "8082"
     depends_on:
       - discovery-server
       - transaction-service
+    entrypoint: "./wait-until-start -t 240 discovery-server:7070 -- java -jar /app.jar"
     environment:
       TRANSACTION_SERVICE_URL: http://transaction-service
       DISCOVERY-SERVER_HOSTNAME: discovery-server
       DISCOVERY-SERVER_PORT: 7070
+      AUTH-SERVER_HOSTNAME: keycloak-auth-service
+      AUTH-SERVER_PORT: 8080
+    mem_limit: 300M
 
   withdraw-service:
     build:
-      context: ./withdraw-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: withdraw-service/Dockerfile
     expose:
       - "8083"
     depends_on:
       - discovery-server
       - transaction-service
+    entrypoint: "./wait-until-start -t 240 discovery-server:7070 -- java -jar /app.jar"
     environment:
       TRANSACTION_SERVICE_URL: http://transaction-service
       DISCOVERY-SERVER_HOSTNAME: discovery-server
       DISCOVERY-SERVER_PORT: 7070
+      AUTH-SERVER_HOSTNAME: keycloak-auth-service
+      AUTH-SERVER_PORT: 8080
+    mem_limit: 300M
 
   service-gateway:
     build:
-      context: ./service-gateway
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: service-gateway/Dockerfile
     ports:
       - "9000:8080"
     depends_on:
       - discovery-server
-      - transaction-service
-      - account-service
-      - deposit-service
-      - transfer-service
-      - withdraw-service
+      - keycloak-auth-service
+    entrypoint: "./wait-until-start -t 240 keycloak-auth-service:8080 -- java -jar /app.jar"
     environment:
       DISCOVERY-SERVER_HOSTNAME: discovery-server
       DISCOVERY-SERVER_PORT: 7070
+      AUTH-SERVER_HOSTNAME: keycloak-auth-service
+      AUTH-SERVER_PORT: 8080
+    mem_limit: 512M
 

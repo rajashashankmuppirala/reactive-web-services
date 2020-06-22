@@ -10,6 +10,11 @@ spring:
     max-in-memory-size: 1MB
   application:
     name: deposit-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://${auth-server.hostname}:${auth-server.port}/auth/realms/service-gateway-realm/protocol/openid-connect/certs
 eureka:
   client:
     registerWithEureka: true
@@ -20,3 +25,11 @@ eureka:
     appName: deposit-service
     preferIpAddress: true
     hostName: deposit-service
+
+logging:
+  level:
+    root: DEBUG
+    org:
+      springframework:
+        http.server.reactive: DEBUG
+        web.reactive: DEBUG
