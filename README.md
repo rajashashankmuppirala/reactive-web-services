@@ -24,12 +24,13 @@ Instructions to run:
 :white_check_mark: Spring oauth2 resource password grant implementation <br/>
 :white_check_mark: Spring security <br/>
 :white_check_mark: Spring actuator enablement for circuit breaker health integration <br/>
+:white_check_mark: Micrometer integration with prometheus timeseries db <br/>
+:white_check_mark: Grafana dashboard integration for metrics from prometheus ds <br/>
 :white_check_mark: Docker <br/>
 :white_check_mark: Docker Compose <br/>
 
 # To Do
 :question: Webflux unit tests <br/>
-:question: Monitoring metrics using grafana <br/>
 :question: Messaging <br/>
-:question: Swagger UI <br/>
+:question: Admin UI <br/>
 :question: Zipkin/Sleuth for logging and tracing<br/>
