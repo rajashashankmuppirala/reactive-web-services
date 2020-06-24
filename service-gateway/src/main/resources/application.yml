@@ -24,6 +24,8 @@ eureka:
     hostName: service-gateway
 
 spring:
+  application:
+    name: service-gateway
   security:
     oauth2:
       client:
@@ -96,6 +98,17 @@ spring:
                 name: withdraw-service
                 fallbackUri: forward:/fallback/withdrawService
 
+        - id: grafana-service
+          uri: http://grafana:3000
+          predicates:
+            - Path=/transfer-service/**
+
+  zipkin:
+    base-url: http://${zipkin.host:localhost}:${zipkin.port:9411}/
+  sleuth:
+    sampler:
+      probability: 100
+
 default-client-registration-id: gateway-password-grant
 
 resilience4j.circuitbreaker:
@@ -103,12 +116,12 @@ resilience4j.circuitbreaker:
     default:
       registerHealthIndicator: true
       slidingWindowSize: 10
-      minimumNumberOfCalls: 5
-      permittedNumberOfCallsInHalfOpenState: 3
+      minimumNumberOfCalls: 10
+      permittedNumberOfCallsInHalfOpenState: 5
       automaticTransitionFromOpenToHalfOpenEnabled: true
       waitDurationInOpenState: 2s
-      failureRateThreshold: 5
-      eventConsumerBufferSize: 10
+      failureRateThreshold: 10
+      eventConsumerBufferSize: 20
       slowCallDurationThreshold: 200ms
       slowCallRateThreshold: 30
       recordExceptions:
@@ -120,9 +133,9 @@ resilience4j.circuitbreaker:
       registerHealthIndicator: true
       slidingWindowSize: 50
       permittedNumberOfCallsInHalfOpenState: 30
-      waitDurationInOpenState: 1s
-      failureRateThreshold: 5
-      eventConsumerBufferSize: 10
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 50
+      eventConsumerBufferSize: 20
       ignoreExceptions:
         - java.lang.IllegalStateException
   instances:
@@ -136,15 +149,15 @@ resilience4j.circuitbreaker:
       registerHealthIndicator: true
       slidingWindowSize: 10
       minimumNumberOfCalls: 10
-      permittedNumberOfCallsInHalfOpenState: 3
+      permittedNumberOfCallsInHalfOpenState: 10
       waitDurationInOpenState: 1s
-      failureRateThreshold: 1
-      eventConsumerBufferSize: 10
+      failureRateThreshold: 10
+      eventConsumerBufferSize: 20
 
 resilience4j.timelimiter:
   configs:
     default:
-      timeoutDuration: 5s
+      timeoutDuration: 10s
       cancelRunningFuture: false
   instances:
     account-service:

@@ -10,6 +10,11 @@ spring:
     max-in-memory-size: 1MB
   application:
     name: transaction-service
+  zipkin:
+    base-url: http://${zipkin.host:localhost}:${zipkin.port:9411}/
+  sleuth:
+    sampler:
+      probability: 100
 eureka:
   client:
     registerWithEureka: true
