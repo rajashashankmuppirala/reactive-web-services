@@ -12,7 +12,7 @@ Instructions to run:
 **  For subsequent requests, gateway would also get the updated access token via the refresh token
 
 
-# Done:
+# Things covered as part of this POC:
 :white_check_mark: Spring Cloud Gateway <br/>
 :white_check_mark: Spring Boot webflux (Reactive) services <br/>
 :white_check_mark: Spring reactive data sources (r2dbc) - postgres <br/>
@@ -26,11 +26,6 @@ Instructions to run:
 :white_check_mark: Spring actuator enablement for circuit breaker health integration <br/>
 :white_check_mark: Micrometer integration with prometheus timeseries db <br/>
 :white_check_mark: Grafana dashboard integration for metrics from prometheus ds <br/>
+:white_check_mark: ELK (Elasticsearch, Logstash & Kubana) for monitoring <br/>
 :white_check_mark: Docker <br/>
 :white_check_mark: Docker Compose <br/>
-
-# To Do
-:question: Webflux unit tests <br/>
-:question: Messaging <br/>
-:question: Admin UI <br/>
-:question: Zipkin/Sleuth for logging and tracing<br/>
