@@ -26,6 +26,8 @@ eureka:
 spring:
   application:
     name: service-gateway
+  logstash:
+    server: logstash
   security:
     oauth2:
       client:

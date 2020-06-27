@@ -204,3 +204,37 @@ services:
       - "9411:9411"
     mem_limit: 512M
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
+    volumes:
+      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xms750m -Xmx750m"
+    mem_limit: 2g
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.8.0
+    volumes:
+      - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    ports:
+      - "5000:5000"
+    environment:
+      LS_JAVA_OPTS: "-Xmx1g -Xms1g"
+    depends_on:
+      - elasticsearch
+    mem_limit: 2g
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.8.0
+    volumes:
+      - ./kibana/config/:/usr/share/kibana/config
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    mem_limit: 2g
+
