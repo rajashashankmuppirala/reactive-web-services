@@ -48,9 +48,6 @@ spring:
       resilience4j:
         enabled: true
     gateway:
-      default-filters:
-        - TokenRelay
-        - RemoveRequestHeader=Cookie
       routes:
         - id: auth-service
           uri: http://192.168.1.12:8080
@@ -64,6 +61,7 @@ spring:
           predicates:
             - Path=/account-service/**
           filters:
+            - TokenRelay
             - RemoveRequestHeader=Cookie
             - name: CircuitBreaker
               args:
@@ -75,6 +73,8 @@ spring:
           predicates:
             - Path=/deposit-service/**
           filters:
+            - TokenRelay
+            - RemoveRequestHeader=Cookie
             - name: CircuitBreaker
               args:
                 name: deposit-service
@@ -85,6 +85,8 @@ spring:
           predicates:
             - Path=/transfer-service/**
           filters:
+            - TokenRelay
+            - RemoveRequestHeader=Cookie
             - name: CircuitBreaker
               args:
                 name: transfer-service
@@ -95,15 +97,27 @@ spring:
           predicates:
             - Path=/withdraw-service/**
           filters:
+            - TokenRelay
+            - RemoveRequestHeader=Cookie
             - name: CircuitBreaker
               args:
                 name: withdraw-service
                 fallbackUri: forward:/fallback/withdrawService
 
-        - id: grafana-service
-          uri: http://grafana:3000
+        - id: s3-service
+          uri: http://${s3.host}:${s3.port}
           predicates:
-            - Path=/transfer-service/**
+            - Path=/static/**
+            - Method=GET
+          filters:
+            - RewritePath=/static/(?<segment>/?.*), /${s3.static.bucket}/$\{segment}
+            - name: S3Auth
+              args:
+                service: s3
+                accessKey: ${s3.access.key}
+                secret: ${s3.secret.key}
+                region: ${s3.region}
+            - PreserveHostHeader
 
   zipkin:
     base-url: http://${zipkin.host:localhost}:${zipkin.port:9411}/
