@@ -197,3 +197,10 @@ logging:
         cloud.gateway: DEBUG
         http.server.reactive: DEBUG
         web.reactive: DEBUG
+
+
+server:
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: '*/*'

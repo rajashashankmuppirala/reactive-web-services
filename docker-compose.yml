@@ -201,7 +201,7 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
     ports:
       - 3000:3000
-    mem_limit: 512M
+    mem_limit: 256M
 
   zipkin:
     image: openzipkin/zipkin
@@ -257,4 +257,4 @@ services:
     restart: on-failure
     volumes:
       - ./minio-data:/minio-data
-    mem_limit: 512M
+    mem_limit: 256M
