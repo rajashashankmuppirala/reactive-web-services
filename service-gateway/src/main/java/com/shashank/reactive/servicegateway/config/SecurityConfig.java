@@ -37,12 +37,6 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain configure(ServerHttpSecurity http) {
         return http.oauth2Client().and()
-           //     .authorizeExchange(exchanges -> exchanges
-           //             .matchers(EndpointRequest.to("health", "info")).permitAll()
-           //             .matchers(ServerWebExchangeMatchers.pathMatchers("/oauth/**","/login/**","/service/**","/**.js","/**.ico")).permitAll()
-           //             .anyExchange().authenticated()
-           //     ).csrf().disable()
-              //  .authorizeExchange().anyExchange().permitAll().and().csrf().disable()
                 .csrf().disable().build();
     }
 

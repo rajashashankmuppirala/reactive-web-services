@@ -10,6 +10,9 @@ spring:
     max-in-memory-size: 1MB
   application:
     name: transaction-service
+  logstash:
+    server: ${logstash.hostname}
+    port: ${logstash.port}
   zipkin:
     base-url: http://${zipkin.host:localhost}:${zipkin.port:9411}/
   sleuth:

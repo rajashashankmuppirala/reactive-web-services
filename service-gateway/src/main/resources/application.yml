@@ -27,7 +27,8 @@ spring:
   application:
     name: service-gateway
   logstash:
-    server: logstash
+    server: ${logstash.hostname}
+    port: ${logstash.port}
   security:
     oauth2:
       client:
@@ -49,13 +50,6 @@ spring:
         enabled: true
     gateway:
       routes:
-        - id: auth-service
-          uri: http://192.168.1.12:8080
-          predicates:
-            - Path=/auth123/**
-          filters:
-            - RewritePath=/auth/(?<segment>.*), /auth/realms/service-gateway-realm/protocol/openid-connect/$\{segment}
-            - AddRequestHeader=Authorization, Basic c2VydmljZS1nYXRld2F5LWNsaWVudDo0ODU0ZGNkOC0yZjM4LTRkNWQtYjYxZi0zZTQyNjMxOTQ2OGM=
         - id: account-service
           uri: lb://account-service
           predicates:

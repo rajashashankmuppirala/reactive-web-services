@@ -53,6 +53,7 @@ services:
     depends_on:
       - discovery-server
       - transaction-service
+      - logstash
     entrypoint: "./wait-until-start -t 240 discovery-server:7070 -- java -jar /app.jar"
     environment:
       TRANSACTION_SERVICE_URL: http://transaction-service
@@ -62,6 +63,8 @@ services:
       AUTH-SERVER_PORT: 8080
       ZIPKIN_HOST: zipkin
       ZIPKIN_PORT: 9411
+      LOGSTASH_HOSTNAME: logstash
+      LOGSTASH_PORT: 5000
     mem_limit: 300M
 
   deposit-service:
@@ -73,6 +76,7 @@ services:
     depends_on:
       - discovery-server
       - transaction-service
+      - logstash
     entrypoint: "./wait-until-start -t 240 discovery-server:7070 -- java -jar /app.jar"
     environment:
       TRANSACTION_SERVICE_URL: http://transaction-service
@@ -82,6 +86,8 @@ services:
       AUTH-SERVER_PORT: 8080
       ZIPKIN_HOST: zipkin
       ZIPKIN_PORT: 9411
+      LOGSTASH_HOSTNAME: logstash
+      LOGSTASH_PORT: 5000
     mem_limit: 300M
 
   transaction-service:
@@ -93,6 +99,7 @@ services:
     depends_on:
       - discovery-server
       - db-service
+      - logstash
     entrypoint: "./wait-until-start -t 240 discovery-server:7070 -- java -jar /app.jar"
     environment:
       DB_HOST: db-service
@@ -104,6 +111,8 @@ services:
       DISCOVERY-SERVER_PORT: 7070
       ZIPKIN_HOST: zipkin
       ZIPKIN_PORT: 9411
+      LOGSTASH_HOSTNAME: logstash
+      LOGSTASH_PORT: 5000
     mem_limit: 300M
 
   transfer-service:
@@ -115,6 +124,7 @@ services:
     depends_on:
       - discovery-server
       - transaction-service
+      - logstash
     entrypoint: "./wait-until-start -t 240 discovery-server:7070 -- java -jar /app.jar"
     environment:
       TRANSACTION_SERVICE_URL: http://transaction-service
@@ -124,6 +134,8 @@ services:
       AUTH-SERVER_PORT: 8080
       ZIPKIN_HOST: zipkin
       ZIPKIN_PORT: 9411
+      LOGSTASH_HOSTNAME: logstash
+      LOGSTASH_PORT: 5000
     mem_limit: 300M
 
   withdraw-service:
@@ -135,6 +147,7 @@ services:
     depends_on:
       - discovery-server
       - transaction-service
+      - logstash
     entrypoint: "./wait-until-start -t 240 discovery-server:7070 -- java -jar /app.jar"
     environment:
       TRANSACTION_SERVICE_URL: http://transaction-service
@@ -144,6 +157,8 @@ services:
       AUTH-SERVER_PORT: 8080
       ZIPKIN_HOST: zipkin
       ZIPKIN_PORT: 9411
+      LOGSTASH_HOSTNAME: logstash
+      LOGSTASH_PORT: 5000
     mem_limit: 300M
 
   service-gateway:
@@ -155,6 +170,7 @@ services:
     depends_on:
       - discovery-server
       - keycloak-auth-service
+      - logstash
     entrypoint: "./wait-until-start -t 240 keycloak-auth-service:8080 -- java -jar /app.jar"
     environment:
       DISCOVERY-SERVER_HOSTNAME: discovery-server
@@ -163,6 +179,8 @@ services:
       AUTH-SERVER_PORT: 8080
       ZIPKIN_HOST: zipkin
       ZIPKIN_PORT: 9411
+      LOGSTASH_HOSTNAME: logstash
+      LOGSTASH_PORT: 5000
       S3_HOST: s3
       S3_PORT: 9000
       S3_STATIC_BUCKET: test-bucket

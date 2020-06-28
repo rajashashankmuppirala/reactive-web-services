@@ -10,6 +10,9 @@ spring:
     max-in-memory-size: 1MB
   application:
     name: deposit-service
+  logstash:
+    server: ${logstash.hostname}
+    port: ${logstash.port}
   security:
     oauth2:
       resourceserver:
