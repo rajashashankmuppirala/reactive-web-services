@@ -2,6 +2,10 @@ server:
   port: 9090
 
 spring:
+  boot:
+    admin:
+      client:
+        url: http://${admin.hostname}:${admin.port}
   cloud:
     loadbalancer:
       ribbon:

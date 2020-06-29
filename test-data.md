@@ -1,4 +1,4 @@
-#Create an account:
+##Create an account:
 
 http://localhost:9000/account-service/account  - POST
 
@@ -33,17 +33,17 @@ http://localhost:9000/account-service/account  - POST
 "accountBalance": 1000.00
 }
 
-#Get account details:
+##Get account details:
 
 http://localhost:9000/account-service/account?accountNumber=10000 - GET
 http://localhost:9000/account-service/account?accountNumber=10001 - GET
 
-#Get all acounts:
+##Get all acounts:
 
 http://localhost:9000/account-service/accounts  - GET
 
 
-#Update an account:
+##Update an account:
 
 http://localhost:9000/account-service/account - PUT
 {
@@ -52,13 +52,13 @@ http://localhost:9000/account-service/account - PUT
 }
 
 
-#Delete and account:
+##Delete and account:
 
 http://localhost:9000/account-service/account?accountNumber=10002  -- DELETE
 
 
 
-#Make a deposit to an account:
+##Make a deposit to an account:
 
 http://localhost:9000/deposit-service/deposit  - POST
 
@@ -74,7 +74,7 @@ http://localhost:9000/deposit-service/deposit  - POST
     "depositType": "CHEQUE"
  }
 
-#Withdraw amount from an account:
+##Withdraw amount from an account:
 
 http://localhost:9000/withdraw-service/withdraw  - POST
 
@@ -90,7 +90,7 @@ http://localhost:9000/withdraw-service/withdraw  - POST
     "withdrawType": "CASH"
 }
 
-#Transfer between two accounts:
+##Transfer between two accounts:
 
 http://localhost:9000/transfer-service/transfer - POST
 
@@ -102,10 +102,39 @@ http://localhost:9000/transfer-service/transfer - POST
 }
 
 
-#Get data for all accounts:
+##Get data for all accounts:
 
 http://localhost:9000/account-service/accounts - GET
 
+
+##Get files from s3:
+
+http://localhost:9000/static/test.txt - GET
+
+
+
+##Spring Boot Admin:
+
+http://localhost:6060
+
+##Zipkin:
+http://localhost:9411
+
+##Grafana:
+
+http://localhost:3000
+
+##Kibana:
+
+http://localhost:5601
+
+##S3 Minio server:
+
+http://localhost:4000
+
+##Keycloak Auth server:
+
+http://localhost:8080
 
 
 

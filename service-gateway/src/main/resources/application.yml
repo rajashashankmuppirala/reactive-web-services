@@ -24,6 +24,10 @@ eureka:
     hostName: service-gateway
 
 spring:
+  boot:
+    admin:
+      client:
+        url: http://${admin.hostname}:${admin.port}
   application:
     name: service-gateway
   logstash:

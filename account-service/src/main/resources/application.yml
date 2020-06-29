@@ -1,7 +1,12 @@
 server:
   port: 6060
 
+
 spring:
+  boot:
+    admin:
+      client:
+        url: http://${admin.hostname}:${admin.port}
   cloud:
     loadbalancer:
       ribbon:
@@ -42,3 +47,11 @@ logging:
       springframework:
         http.server.reactive: DEBUG
         web.reactive: DEBUG
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always

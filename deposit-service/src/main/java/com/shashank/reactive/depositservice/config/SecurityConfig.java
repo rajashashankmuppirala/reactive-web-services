@@ -20,6 +20,8 @@ public class SecurityConfig {
     SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http.authorizeExchange()
                 .pathMatchers(HttpMethod.POST,"/**/deposit/**").hasRole("SUPER_USER")
+                .pathMatchers("/instances").permitAll()
+                .pathMatchers("/actuator/**").permitAll()
                 .anyExchange().authenticated()
                 .and()
                 .oauth2ResourceServer()

@@ -27,6 +27,8 @@ public class SecurityConfig {
                 .pathMatchers(HttpMethod.POST,"/**/account/**").hasAnyRole(ROLE_SUPER_USER)
                 .pathMatchers(HttpMethod.PUT,"/**/account/**").hasAnyRole(ROLE_SUPER_USER)
                 .pathMatchers(HttpMethod.DELETE,"/**/account/**").hasAnyRole(ROLE_SUPER_USER)
+                .pathMatchers("/instances").permitAll()
+                .pathMatchers("/actuator/**").permitAll()
                 .anyExchange().authenticated()
                 .and()
                 .oauth2ResourceServer()

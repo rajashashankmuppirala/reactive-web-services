@@ -10,6 +10,7 @@ Instructions to run:
   *  The gateway will be responsible for fetching and relaying the access token to the services
   *  For subsequent requests, gateway would also get the updated access token via the refresh token
 
+*** Please refer to test-data.md for all endpoints.
 
 ## Components covered as part of this POC:
 
@@ -31,4 +32,5 @@ Instructions to run:
 *  Kibana for log monitoring using Logstash and Elasticsearch (ELK) <br/>
 *  Minio for S3 buckets (static content object storage) <br/>
 *  Spring cloud gateway to create AWS s4 signature and proxy s3 service endpoint <br/>
+*  Spring Boot Admin server and Spring boot clients for monitoring services <br/>
 *  Docker/Docker Compose <br/>
